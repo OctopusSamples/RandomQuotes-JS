@@ -1,0 +1,5 @@
+#Nodey stuff
+node_modules
+
+#IDE
+.idea
