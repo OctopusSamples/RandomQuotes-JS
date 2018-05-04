@@ -1,10 +1,9 @@
-// including plugins
-var gulp = require('gulp')
-    , minifyHtml = require("gulp-minify-html");
 
-// task
-gulp.task('minify-html', function () {
-    gulp.src('./Html/*.html') // path to your files
-        .pipe(minifyHtml())
-        .pipe(gulp.dest('path/to/destination'));
+var gulp = require('gulp');
+var octo = require('@octopusdeploy/gulp-octo');
+
+gulp.task('publish', function() {
+    return gulp.src(['**/*'])
+        .pipe(octo.pack('zip'))
+        .pipe(octo.push({host: 'http://localhost:8065', apiKey: 'API-XXXX', replace: true}));
 });
