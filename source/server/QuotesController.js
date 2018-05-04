@@ -1,36 +1,36 @@
-// UserController.js
 var express = require('express');
 var router = express.Router();
-var bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({ extended: true }));
-// var User = require('./User');
-// ADD THIS PART
-// CREATES A NEW USER
-// router.post('/', function (req, res) {
-//     User.create({
-//             name : req.body.name,
-//             email : req.body.email,
-//             password : req.body.password
-//         },
-//         function (err, user) {
-//             if (err) return res.status(500).send("There was a problem adding the information to the database.");
-//             res.status(200).send(user);
-//         });
-// });
-// RETURNS ALL THE USERS IN THE DATABASE
+const fs = require("fs");
+const path = require("path");
 
-router.get('/blah', function (req, res) {
-    res.status(200).send("Blah");
+
+function LoadData(filename) {
+    return new Promise((res, rej) => fs.readFile(path.join(__dirname, "data",filename), "UTF-8", (err, data) => {
+        if(err){
+            rej();
+        } else {
+            res(data.split("\r\n"))
+        }
+    }));
+}
+
+function RandomQuote() {
+    return LoadData("quotes.txt").then((quotes) =>
+        LoadData("authors.txt").then(authors => {
+            return {
+                quote: quotes[getRandomInt(quotes.length)],
+                author: authors[getRandomInt(authors.length)]
+            };
+        }));
+}
+
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
+router.get('/quote', function (req, res) {
+    RandomQuote().then(quote => res.status(200).send(quote)).catch(s => res.status(500));
 });
-
-router.get('/', function (req, res) {
-    res.status(200).send("GIT IT");
-});
-
-
-router.get('/:id', function (req, res) {
-    res.status(200).send("Real onw! " + req.params.id);
-});
-
 
 module.exports = router;

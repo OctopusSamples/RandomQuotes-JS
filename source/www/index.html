@@ -1,10 +1,48 @@
 <html>
 <head>
     <title>HI</title>
-    <script src="/js/index.js" type="application/javascript" ></script>
+    <link href="bootstrap/css/bootstrap.css"  rel="stylesheet"/>
+
+    <script src="jquery/jquery.min.js" type="application/javascript" ></script>
+    <script src="bootstrap/js/bootstrap.js" type="application/javascript" ></script>
+    <script src="js/index.js" type="application/javascript" ></script>
 </head>
-<body>
 
 
-</body>
+    <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #222">
+        <div class="container">
+            <div class="navbar-header">
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Random Quotes</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content">
+        <h2>Random Quote</h2>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <blockquote>
+                    <p id="quoteText">
+
+                    </p>
+                    <footer id="quoteAuthor">
+
+                    </footer>
+                </blockquote>
+            </div>
+        </div>
+
+
+        <button id="refreshQuote" class="btn btn-success btn-lg text-center">Refresh</button>
+
+        <hr>
+        <footer>
+            <p>© 2018 - Random Quotes | Version 0.0.0 running in DEV</p>
+        </footer>
+    </div>
+
+
+    </body>
+
 </html>
