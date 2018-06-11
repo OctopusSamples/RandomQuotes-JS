@@ -12,5 +12,5 @@ app.use('/bootstrap', express.static(path.join(__dirname, '../', '../', 'node_mo
 app.use('/jquery', express.static(path.join(__dirname, '../', '../', 'node_modules', 'jquery', 'dist')));
 
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'));
+app.listen(3000, () => console.log('Random Quotes app listening on port 3000!'));
 

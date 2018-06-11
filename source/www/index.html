@@ -1,48 +1,58 @@
 <html>
 <head>
-    <title>HI</title>
-    <link href="bootstrap/css/bootstrap.css"  rel="stylesheet"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Random Quotes</title>
 
-    <script src="jquery/jquery.min.js" type="application/javascript" ></script>
-    <script src="bootstrap/js/bootstrap.js" type="application/javascript" ></script>
-    <script src="js/index.js" type="application/javascript" ></script>
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet"/>
+
+    <script src="jquery/jquery.min.js" type="application/javascript"></script>
+    <script src="bootstrap/js/bootstrap.js" type="application/javascript"></script>
+    <script src="js/index.js" type="application/javascript"></script>
 </head>
 
+<body>
 
-    <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #222">
-        <div class="container">
-            <div class="navbar-header">
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Random Quotes</a>
-            </div>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">Random Quotes</a>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container body-content">
-        <h2>Random Quote</h2>
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <blockquote>
-                    <p id="quoteText">
+<div class="container body-content">
 
-                    </p>
-                    <footer id="quoteAuthor">
+    <br><br>
+    <h2>Quotes as a Service</h2>
 
-                    </footer>
-                </blockquote>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <blockquote>
+                <p id="quoteText">
+                </p>
+                <footer id="quoteAuthor">
+                </footer>
+            </blockquote>
         </div>
-
-
-        <button id="refreshQuote" class="btn btn-success btn-lg text-center">Refresh</button>
-
-        <hr>
-        <footer>
-            <p>© 2018 - Random Quotes | Version 0.0.0 running in DEV</p>
-        </footer>
     </div>
 
+    <button id="refreshQuote" class="btn btn-success btn-lg text-center">Refresh</button>
 
-    </body>
+    <hr>
+
+    <footer>
+        <p>© 2018 - Random Quotes | Version 0.0.0 running in DEV</p>
+    </footer>
+
+</div>
+
+</body>
 
 </html>
