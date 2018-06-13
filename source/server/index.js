@@ -1,16 +1,27 @@
 const express = require('express');
 const app = express();
-
+const config = require('../config/config');
 const path = require("path");
+const os = require('os');
 
-var UserController = require('./QuotesController');
-
-app.use('/api', UserController);
+const QuotesController = require('./QuotesController');
+app.use('/api', QuotesController);
 
 app.use('/', express.static(path.join(__dirname, "../", "www")));
 app.use('/bootstrap', express.static(path.join(__dirname, '../', '../', 'node_modules', 'bootstrap', 'dist')));
 app.use('/jquery', express.static(path.join(__dirname, '../', '../', 'node_modules', 'jquery', 'dist')));
 
+app.get('/config', function (req, res) {
+    res.json(config.client || {});
+});
 
-app.listen(3000, () => console.log('Random Quotes app listening on port 3000!'));
+app.get('/server', function(req,res) {
+    res.json({ 'pid': process.pid, platform: os.platform() });
+});
 
+var server = app.listen(config.port, function () {
+    var host = server.address().address;
+    var port = server.address().port;
+
+    console.log('App listening at http://%s:%s', host, port);
+});

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const config = require('../config/config');
 const fs = require("fs");
 const path = require("path");
 
@@ -8,6 +9,8 @@ function RandomQuote() {
         LoadData("authors.txt").then(authors => {
             let randomQuoteIndex = getRandomInt(quotes.length);
             return {
+                appVersion: config.appVersion,
+                environmentName: config.environmentName,
                 quote: quotes[randomQuoteIndex],
                 author: authors[randomQuoteIndex]
             };

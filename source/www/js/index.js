@@ -5,6 +5,8 @@ $(function(){
         }).then(function (quote) {
             $("#quoteText").text(quote.quote);
             $("#quoteAuthor").text(quote.author);
+            $("#appVersion").text(quote.appVersion);
+            $("#environmentName").text(quote.environmentName);
         });
     }
 
