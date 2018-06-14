@@ -19,9 +19,9 @@ app.get('/server', function(req,res) {
     res.json({ 'pid': process.pid, platform: os.platform() });
 });
 
-var server = app.listen(config.port, function () {
-    var host = server.address().address;
-    var port = server.address().port;
+const server = app.listen(config.port, function () {
+    const host = server.address().address;
+    const port = server.address().port;
 
     console.log('App listening at http://%s:%s', host, port);
 });
