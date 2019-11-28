@@ -1,6 +1,6 @@
 // config.js
 const config = {
-    port: 5555,
+    port: 80,
     appVersion: "0.0.0",
     environmentName: "DEV"
 };
