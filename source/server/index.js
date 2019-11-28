@@ -5,7 +5,7 @@ const path = require("path");
 const os = require('os');
 
 const QuotesController = require('./QuotesController');
-app.use('/api', QuotesController);
+app.use('/api', QuotesController.router);
 
 app.use('/', express.static(path.join(__dirname, "../", "www")));
 app.use('/bootstrap', express.static(path.join(__dirname, '../', '../', 'node_modules', 'bootstrap', 'dist')));

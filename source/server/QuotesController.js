@@ -35,4 +35,7 @@ router.get('/quote', function (req, res) {
     RandomQuote().then(quote => res.status(200).send(quote)).catch(s => res.status(500));
 });
 
-module.exports = router;
+module.exports = {
+    router,
+    RandomQuote
+};
