@@ -13,7 +13,7 @@ pipeline {
         }
         stage('A meaningless change') {
             steps {
-                sh 'echo "Hi there"'
+                sh 'echo "Hi there changed"'
             }
         }
     }
