@@ -16,5 +16,11 @@ pipeline {
                 sh 'echo "Hi there changed"'
             }
         }
+        stage('An intervention') {
+                    steps {
+                        input message: "Does http://localhost:8888/staging/ look good?"
+                    }
+                }
+
     }
 }
