@@ -11,5 +11,10 @@ pipeline {
                 sh 'npm test'
             }
         }
+        stage('A meaningless change') {
+            steps {
+                sh 'echo "Hi there"'
+            }
+        }
     }
 }
