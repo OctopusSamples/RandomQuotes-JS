@@ -12,7 +12,7 @@
   "dependencies": {
     "bootstrap": "^3.4.1",
     "express": "^4.16.3",
-    "jquery": "^3.4.1"
+    "jquery": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^10.0.3",
