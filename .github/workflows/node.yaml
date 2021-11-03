@@ -53,7 +53,7 @@ jobs:
       shell: bash
     - id: get_artifact
       name: Get Artifact Path
-      run: '"::set-output name=artifact::RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip"'
+      run: echo "::set-output name=artifact::RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip"
       shell: bash
     - id: get_artifact_name
       name: Get Artifact Name
