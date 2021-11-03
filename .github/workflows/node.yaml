@@ -28,7 +28,7 @@ jobs:
         name: Dependencies
         path: dependencies.txt
     - name: List Dependency Updates
-      run: npm outdated > dependencieupdates.txt || true
+      run: npm outdated > dependencyUpdates.txt || true
       shell: bash
     - name: Collect Dependency Updates
       uses: actions/upload-artifact@v2
@@ -39,12 +39,15 @@ jobs:
       run: npm test || true
       shell: bash
     - name: Build
-      run: '# npm run build'
+      run: |-
+        # package.json does not define a build script, so the build command is commented out.
+        # npm run build
       shell: bash
     - name: Package
       run: |-
         SOURCEPATH=.
         OUTPUTPATH=.
+        # If there is a build directory, assume that is what we want to package
         if [[ -d "build" ]]; then
           SOURCEPATH=build
           OUTPUTPATH=...
@@ -72,14 +75,6 @@ jobs:
          --include '**/*.txt' \
          --include '**/*.Procfile'
       shell: bash
-    - id: get_artifact
-      name: Get Artifact Path
-      run: echo "::set-output name=artifact::RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip"
-      shell: bash
-    - id: get_artifact_name
-      name: Get Artifact Name
-      run: echo "::set-output name=artifact::RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip"
-      shell: bash
     - env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       id: create_release
@@ -96,8 +91,8 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.get_artifact.outputs.artifact }}
-        asset_name: ${{ steps.get_artifact_name.outputs.artifact }}
+        asset_path: RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip
+        asset_name: RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip
         asset_content_type: application/octet-stream
     - name: Push to Octopus
       uses: OctopusDeploy/push-package-action@v1.1.1
