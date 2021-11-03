@@ -49,7 +49,28 @@ jobs:
           SOURCEPATH=build
           OUTPUTPATH=...
         fi
-        octo pack --basePath ${SOURCEPATH} --outFolder ${OUTPUTPATH} --id RandomQuotes-JS --version ${{ steps.determine_version.outputs.semVer }} --format zip --overwrite --include **/*.html --include **/*.htm --include **/*.css --include **/*.js --include **/*.min --include **/*.map --include **/*.sql --include **/*.png --include **/*.jpg --include **/*.jpeg --include **/*.gif --include **/*.json --include **/*.env --include **/*.txt --include **/*.Procfile
+        octo pack \
+         --basePath ${SOURCEPATH} \
+         --outFolder ${OUTPUTPATH} \
+         --id RandomQuotes-JS \
+         --version ${{ steps.determine_version.outputs.semVer }} \
+         --format zip \
+         --overwrite \
+         --include **/*.html \
+         --include **/*.htm \
+         --include **/*.css \
+         --include **/*.js \
+         --include **/*.min \
+         --include **/*.map \
+         --include **/*.sql \
+         --include **/*.png \
+         --include **/*.jpg \
+         --include **/*.jpeg \
+         --include **/*.gif \
+         --include **/*.json \
+         --include **/*.env \
+         --include **/*.txt \
+         --include **/*.Procfile
       shell: bash
     - id: get_artifact
       name: Get Artifact Path
