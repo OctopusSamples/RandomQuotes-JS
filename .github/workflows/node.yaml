@@ -82,7 +82,7 @@ jobs:
       uses: OctopusDeploy/push-package-action@v1.1.1
       with:
         api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        packages: ${{ steps.get_octopus_artifact.outputs.artifact }}
+        packages: ${{ steps.get_artifact.outputs.artifact }}
         server: ${{ secrets.OCTOPUS_SERVER_URL }}
     - name: Generate Octopus Deploy build information
       uses: xo-energy/action-octopus-build-information@v1.1.2
