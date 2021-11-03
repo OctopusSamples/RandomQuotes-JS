@@ -17,10 +17,10 @@ jobs:
       with:
         version: latest
     - name: Install Dependencies
-      run: composer install
+      run: npm install
       shell: bash
     - name: List Dependencies
-      run: composer show --all > dependencies.txt
+      run: npm list --all > dependencies.txt
       shell: bash
     - name: Collect Dependencies
       uses: actions/upload-artifact@v2
@@ -28,7 +28,7 @@ jobs:
         name: Dependencies
         path: dependencies.txt
     - name: List Dependency Updates
-      run: composer outdated > dependencyUpdates.txt
+      run: npm outdated > dependencyUpdates.txt || true
       shell: bash
     - name: Collect Dependency Updates
       uses: actions/upload-artifact@v2
@@ -36,16 +36,13 @@ jobs:
         name: Dependencies Updates
         path: dependencyUpdates.txt
     - name: Test
-      run: vendor/bin/phpunit --log-junit results.xml tests || true
+      run: npm test || true
       shell: bash
-    - if: always()
-      name: Report
-      uses: dorny/test-reporter@v1
-      with:
-        name: PHP Tests
-        path: results.xml
-        reporter: java-junit
-        fail-on-error: 'false'
+    - name: Build
+      run: |-
+        # package.json does not define a build script, so the build command is commented out.
+        # npm run build
+      shell: bash
     - name: Package
       run: |-
         SOURCEPATH=.
@@ -62,7 +59,6 @@ jobs:
          --version ${{ steps.determine_version.outputs.semVer }} \
          --format zip \
          --overwrite \
-         --include '**/*.php' \
          --include '**/*.html' \
          --include '**/*.htm' \
          --include '**/*.css' \
