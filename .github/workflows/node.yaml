@@ -65,8 +65,8 @@ jobs:
       name: Create Release
       uses: actions/create-release@v1
       with:
-        tag_name: ${{ steps.determine_version.outputs.semVer }}
-        release_name: Release ${{ steps.determine_version.outputs.semVer }}
+        tag_name: ${{ steps.determine_version.outputs.semVer }}.${{ github.run_number }}
+        release_name: Release ${{ steps.determine_version.outputs.semVer }}.${{ github.run_number }}
         draft: 'false'
         prerelease: 'false'
     - env:
