@@ -33,7 +33,6 @@ jobs:
         version: latest
     - name: Install Dependencies
       run: npm ci
-      shell: bash
     - name: List Dependencies
       run: npm list --all > dependencies.txt
       shell: bash
