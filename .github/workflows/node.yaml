@@ -1,13 +1,7 @@
-# The following workflow provides an opinionated template you can customize for your own needs.
-#
-# To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and
-# set the OCTOPUS_SERVER_URL secret to the Octopus URL.
-#
-# Double check the "project" and "deploy_to" properties in the "Create Octopus Release" step
-# match your Octopus projects and environments.
-#
-# Get a trial Octopus instance from https://octopus.com/start
-
+name: Node.js Build
+'on':
+  workflow_dispatch: {}
+  push: {}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,43 +13,26 @@ jobs:
       with:
         node-version: lts/*
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.7
+      uses: gittools/actions/gitversion/setup@v0.9.14
       with:
         versionSpec: 5.x
     - id: determine_version
       name: Determine Version
-      uses: gittools/actions/gitversion/execute@v0.9.7
+      uses: gittools/actions/gitversion/execute@v0.9.14
       with:
         additionalArguments: /overrideconfig mode=Mainline
     - name: Install Octopus Deploy CLI
-      uses: OctopusDeploy/install-octocli@v1.1.1
+      uses: OctopusDeploy/install-octopus-cli-action@v1
       with:
         version: latest
     - name: Install Dependencies
       run: npm ci
-    - name: List Dependencies
-      run: npm list --all > dependencies.txt
       shell: bash
-    - name: Collect Dependencies
-      uses: actions/upload-artifact@v2
-      with:
-        name: Dependencies
-        path: dependencies.txt
-    - name: List Dependency Updates
-      run: npm outdated > dependencyUpdates.txt || true
-      shell: bash
-    - name: Collect Dependency Updates
-      uses: actions/upload-artifact@v2
-      with:
-        name: Dependencies Updates
-        path: dependencyUpdates.txt
     - name: Test
-      run: npm test || true
+      run: npm test
       shell: bash
     - name: Build
-      run: |-
-        # package.json does not define a build script, so the build command is commented out.
-        # npm run build
+      run: npm run build
       shell: bash
     - name: Package
       run: |-
@@ -64,12 +41,11 @@ jobs:
         # If there is a build directory, assume that is what we want to package
         if [[ -d "build" ]]; then
           SOURCEPATH=build
-          OUTPUTPATH=...
         fi
         octo pack \
          --basePath ${SOURCEPATH} \
          --outFolder ${OUTPUTPATH} \
-         --id nodejs1application \
+         --id randomquotes \
          --version ${{ steps.determine_version.outputs.semVer }} \
          --format zip \
          --overwrite \
@@ -89,56 +65,19 @@ jobs:
          --include '**/*.txt' \
          --include '**/*.Procfile'
       shell: bash
-    - name: Tag Release
-      uses: mathieudutour/github-tag-action@v6.0
+    - name: Push packages to Octopus Deploy
+      uses: OctopusDeploy/push-package-action@v2
+      env:
+        OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_TOKEN }}
+        OCTOPUS_HOST: ${{ secrets.OCTOPUS_SERVER_URL }}
       with:
-        custom_tag: ${{ steps.determine_version.outputs.semVer }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    - env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      id: create_release
-      name: Create Release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}
-        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ github.run_number }} Attempt ${{ github.run_attempt }}
-        draft: 'false'
-        prerelease: 'false'
-    - env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: nodejs1application.${{ steps.determine_version.outputs.semVer }}.zip
-        asset_name: nodejs1application.${{ steps.determine_version.outputs.semVer }}.zip
-        asset_content_type: application/octet-stream
-    - name: Push to Octopus
-      uses: OctopusDeploy/push-package-action@v1.1.1
-      with:
-        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        packages: nodejs1application.${{ steps.determine_version.outputs.semVer }}.zip
-        server: ${{ secrets.OCTOPUS_SERVER_URL }}
+        packages: randomquotes.${{ steps.determine_version.outputs.semVer }}.zip
         overwrite_mode: OverwriteExisting
-    - name: Generate Octopus Deploy build information
-      uses: xo-energy/action-octopus-build-information@v1.1.2
-      with:
-        octopus_api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        octopus_project: nodejs1application
-        octopus_server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        push_version: ${{ steps.determine_version.outputs.semVer }}
-        push_package_ids: nodejs1application
-        push_overwrite_mode: OverwriteExisting
-        output_path: octopus
     - name: Create Octopus Release
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
         api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        project: nodejs1application
+        project: Random Quotes
         server: ${{ secrets.OCTOPUS_SERVER_URL }}
         deploy_to: Development
-        packages: nodejs1application:${{ steps.determine_version.outputs.semVer }}
-name: Node.js Build
-'on':
-  workflow_dispatch: {}
-  push: {}
+        packages: randomquotes:${{ steps.determine_version.outputs.semVer }}
