@@ -44,7 +44,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: octopussamples/randomquotesjs:latest
+        tags: octopussamples/randomquotesjs:${{ steps.determine_version.outputs.semVer }}
     - name: Create Octopus Release
       uses: OctopusDeploy/create-release-action@v1.1.1
       with:
