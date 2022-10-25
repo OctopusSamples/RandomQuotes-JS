@@ -1,3 +1,16 @@
+# The following workflow provides an opinionated template you can customize for your own needs.
+#
+# If you are not an Octopus user, the "Push to Octopus", "Generate Octopus Deploy build information",
+# and "Create Octopus Release" steps can be safely deleted.
+#
+# To configure Octopus, set the OCTOPUS_API_TOKEN secret to the Octopus API key, and
+# set the OCTOPUS_SERVER_URL secret to the Octopus URL.
+#
+# Double check the "project" and "deploy_to" properties in the "Create Octopus Release" step
+# match your Octopus projects and environments.
+#
+# Get a trial Octopus instance from https://octopus.com/start
+
 name: Node.js Build
 'on':
   workflow_dispatch: {}
@@ -6,10 +19,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
       with:
         fetch-depth: '0'
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
         node-version: lts/*
     - name: Install GitVersion
@@ -28,6 +41,22 @@ jobs:
     - name: Install Dependencies
       run: npm ci
       shell: bash
+    - name: List Dependencies
+      run: npm list --all > dependencies.txt
+      shell: bash
+    - name: Collect Dependencies
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies
+        path: dependencies.txt
+    - name: List Dependency Updates
+      run: npm outdated > dependencyUpdates.txt
+      shell: bash
+    - name: Collect Dependency Updates
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dependencies Updates
+        path: dependencyUpdates.txt
     - name: Test
       run: npm test
       shell: bash
@@ -45,7 +74,7 @@ jobs:
         octo pack \
          --basePath ${SOURCEPATH} \
          --outFolder ${OUTPUTPATH} \
-         --id randomquotes \
+         --id RandomQuotes-JS \
          --version ${{ steps.determine_version.outputs.semVer }} \
          --format zip \
          --overwrite \
@@ -65,19 +94,52 @@ jobs:
          --include '**/*.txt' \
          --include '**/*.Procfile'
       shell: bash
+    - name: Tag Release
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        custom_tag: ${{ steps.determine_version.outputs.semVer }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - id: create_release
+      name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.determine_version.outputs.semVer }}+run${{ github.run_number }}-attempt${{ github.run_attempt }}
+        release_name: Release ${{ steps.determine_version.outputs.semVer }} Run ${{ github.run_number }} Attempt ${{ github.run_attempt }}
+        draft: 'false'
+        prerelease: 'false'
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip
+        asset_name: RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip
+        asset_content_type: application/octet-stream
     - name: Push packages to Octopus Deploy
       uses: OctopusDeploy/push-package-action@v2
       env:
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_TOKEN }}
         OCTOPUS_HOST: ${{ secrets.OCTOPUS_SERVER_URL }}
       with:
-        packages: randomquotes.${{ steps.determine_version.outputs.semVer }}.zip
+        packages: RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip
+        overwrite_mode: OverwriteExisting
+    - name: Generate Octopus Deploy build information
+      uses: OctopusDeploy/push-build-information-action@v1
+      env:
+        OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_TOKEN }}
+        OCTOPUS_HOST: ${{ secrets.OCTOPUS_SERVER_URL }}
+      with:
+        version: ${{ steps.determine_version.outputs.semVer }}
+        packages: RandomQuotes-JS
         overwrite_mode: OverwriteExisting
     - name: Create Octopus Release
-      uses: OctopusDeploy/create-release-action@v1.1.1
+      uses: OctopusDeploy/create-release-action@v1
       with:
         api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        project: Random Quotes
+        project: RandomQuotes-JS
         server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        deploy_to: Dev
-        packages: randomquotes:${{ steps.determine_version.outputs.semVer }}
+        deploy_to: Development
+        packages: RandomQuotes-JS:${{ steps.determine_version.outputs.semVer }}
