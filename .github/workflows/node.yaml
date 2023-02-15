@@ -1,3 +1,5 @@
+# For a detailed breakdown of this workflow, see https://octopus.com/docs/guides/deploy-node-app/to-nginx/using-octopus-onprem-github-builtin
+#
 # The following workflow provides an opinionated template you can customize for your own needs.
 #
 # If you are not an Octopus user, the "Push to Octopus", "Generate Octopus Deploy build information",
@@ -26,12 +28,12 @@ jobs:
       with:
         node-version: lts/*
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.14
+      uses: gittools/actions/gitversion/setup@v0.9.15
       with:
         versionSpec: 5.x
     - id: determine_version
       name: Determine Version
-      uses: gittools/actions/gitversion/execute@v0.9.14
+      uses: gittools/actions/gitversion/execute@v0.9.15
       with:
         additionalArguments: /overrideconfig mode=Mainline
     - name: Install Octopus Deploy CLI
@@ -95,7 +97,7 @@ jobs:
          --include '**/*.Procfile'
       shell: bash
     - name: Tag Release
-      uses: mathieudutour/github-tag-action@v6.0
+      uses: mathieudutour/github-tag-action@v6.1
       with:
         custom_tag: ${{ steps.determine_version.outputs.semVer }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -119,27 +121,32 @@ jobs:
         asset_name: RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip
         asset_content_type: application/octet-stream
     - name: Push packages to Octopus Deploy
-      uses: OctopusDeploy/push-package-action@v2
+      uses: OctopusDeploy/push-package-action@v3
       env:
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_TOKEN }}
-        OCTOPUS_HOST: ${{ secrets.OCTOPUS_SERVER_URL }}
+        OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
       with:
         packages: RandomQuotes-JS.${{ steps.determine_version.outputs.semVer }}.zip
         overwrite_mode: OverwriteExisting
     - name: Generate Octopus Deploy build information
-      uses: OctopusDeploy/push-build-information-action@v1
+      uses: OctopusDeploy/push-build-information-action@v3
       env:
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_TOKEN }}
-        OCTOPUS_HOST: ${{ secrets.OCTOPUS_SERVER_URL }}
+        OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
+        OCTOPUS_SPACE: ${{ secrets.OCTOPUS_SPACE }}
       with:
         version: ${{ steps.determine_version.outputs.semVer }}
         packages: RandomQuotes-JS
         overwrite_mode: OverwriteExisting
     - name: Create Octopus Release
-      uses: OctopusDeploy/create-release-action@v1
+      uses: OctopusDeploy/create-release-action@v3
+      env:
+        OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_TOKEN }}
+        OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
       with:
-        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
         project: RandomQuotes-JS
-        server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        deploy_to: Development
         packages: RandomQuotes-JS:${{ steps.determine_version.outputs.semVer }}
+permissions:
+  id-token: write
+  checks: write
+  contents: write
